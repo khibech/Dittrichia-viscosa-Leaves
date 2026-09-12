@@ -1,0 +1,56 @@
+title                   = Protein-ligand complex MD simulation
+
+; Run parameters
+integrator              = md        ; leap-frog integrator
+nsteps                  = 50000000  ; 2 fs × 50,000,000 = 100,000 ps = 100 ns
+dt                      = 0.002     ; 2 fs
+
+; Output control
+nstenergy               = 5000      ; save energies every 10 ps
+nstlog                  = 5000      ; update log file every 10 ps
+nstxout-compressed      = 50000     ; save coordinates every 100 ps (~1000 frames over 100 ns)
+
+; Bond parameters
+continuation            = yes       ; continuing from NPT
+constraint_algorithm    = lincs     ; holonomic constraints
+constraints             = h-bonds   ; bonds to H are constrained
+lincs_iter              = 1         ; accuracy of LINCS
+lincs_order             = 4         ; also related to accuracy
+
+; Neighbor searching and van der Waals
+cutoff-scheme           = Verlet
+ns_type                 = grid      ; search neighboring grid cells
+nstlist                 = 20        ; largely irrelevant with Verlet
+rlist                   = 1.2
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 1.0
+rvdw                    = 1.2       ; short-range van der Waals cutoff (nm)
+
+; Electrostatics
+coulombtype             = PME       ; Particle Mesh Ewald
+rcoulomb                = 1.2
+pme_order               = 4         ; cubic interpolation
+fourierspacing          = 0.16      ; FFT grid spacing
+
+; Temperature coupling
+tcoupl                  = V-rescale
+tc-grps                 = Protein_LIG Water_and_ions
+tau_t                   = 0.1   0.1
+ref_t                   = 300   300
+
+; Pressure coupling
+pcoupl                  = Parrinello-Rahman
+pcoupltype              = isotropic
+tau_p                   = 2.0
+ref_p                   = 1.0
+compressibility         = 4.5e-5
+
+; Periodic boundary conditions
+pbc                     = xyz
+
+; Dispersion correction
+DispCorr                = no
+
+; Velocity generation
+gen_vel                 = no        ; continuing from NPT equilibration
